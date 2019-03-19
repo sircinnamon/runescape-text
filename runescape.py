@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw,ImageFont
 import math
 
-def parse_string(input):
+def parse_string(input, delimiter=':'):
 	global effect
 	global advcolour
 	global colour
@@ -10,8 +10,8 @@ def parse_string(input):
 	advcolour = defaultadvcolour
 	has_effect=False
 	has_colour=False
-	while(":" in input):
-		spl = input.split(":",1);
+	while(delimiter in input):
+		spl = input.split(delimiter,1);
 		# print("Parsing arg "+spl[0])
 		if(spl[0] in colourmap and has_colour==False):
 			# print("Set colour to "+spl[0])
@@ -362,7 +362,7 @@ effectmap = {
 	"shake": shake_effect
 }
 
-string = "glow1:wave:cdjquw4 AAAA"
+string = "glow1:wave:cdjquw4 \nAAAA"
 fnt = ImageFont.truetype('./runescape_uf.ttf', size=15)
 
-parse_string(string)
+# parse_string(string)
