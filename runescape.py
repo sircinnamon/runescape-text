@@ -5,6 +5,9 @@ def parse_string(input):
 	global effect
 	global advcolour
 	global colour
+	effect = defaulteffect
+	colour = defaultcolour
+	advcolour = defaultadvcolour
 	has_effect=False
 	has_colour=False
 	while(":" in input):
@@ -28,26 +31,29 @@ def parse_string(input):
 		else:
 			break
 	# print("final str "+input)
-	effectmap[effect](input)
+	return effectmap[effect](input)
 
-def single_frame_save(img):
+def single_frame_save(img, append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
-	print("Save test.png")
-	img.save('test.png', 'PNG')
+	print("Save test"+append+".gif")
+	img.save("test"+append+".gif", 'GIF',transparency=0)
+	return "test"+append+".gif"
 
 def multi_frame_save(img_set, frametime=100):
 	print("Save test.gif")
 	img_set[0].save('test.gif', 'GIF', transparency=0, append_images=img_set[1:], save_all=True, duration=frametime, loop=0, disposal=2, optimize=False)
+	return "test.gif"
 
 def no_effect(string):
 	print(advcolour)
 	if(advcolour=="none"):
 		size = fnt.getsize(string)
-		img = Image.new('RGBA', (size[0], size[1]+4), (0, 0, 0, 0))
+		img = Image.new('RGBA', (size[0], size[1]+4), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		draw.text((0+1,2+1), string, font=fnt, fill=(0,0,0))
 		draw.text((0,2), string, font=fnt, fill=colourmap[colour])
-		single_frame_save(img)
+		return single_frame_save(img)
 	else:
 		size = fnt.getsize(string)
 		img_set=[]
@@ -55,11 +61,12 @@ def no_effect(string):
 		while(frame < fps*4):
 			img = Image.new('RGBA', (size[0], size[1]+4), (255, 255, 255, 0))
 			draw = ImageDraw.Draw(img)
+			draw.fontmode = "1"
 			draw.text((0+1,2+1), string, font=fnt, fill=(0,0,0))
 			draw.text((0,2), string, font=fnt, fill=advcolourmap[advcolour](frame))
 			img_set.append(img)
 			frame = frame+1
-		multi_frame_save(img_set)
+		return multi_frame_save(img_set)
 
 def scroll_effect(string):
 	size = fnt.getsize(string)
@@ -70,6 +77,7 @@ def scroll_effect(string):
 	while(x_offset < (size[0]*2)+4):
 		img = Image.new('RGBA', (size[0], size[1]+4), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		if(advcolour=="none"):
 			draw.text((1+size[0]+1-x_offset,1+2), string, font=fnt, fill=(0,0,0))
 			draw.text((size[0]+1-x_offset,2), string, font=fnt, fill=colourmap[colour])
@@ -79,7 +87,7 @@ def scroll_effect(string):
 		img_set.append(img)
 		x_offset=x_offset+x_increment
 		frame = frame+1
-	multi_frame_save(img_set)
+	return multi_frame_save(img_set)
 
 def slide_effect(string):
 	size = fnt.getsize(string)
@@ -90,6 +98,7 @@ def slide_effect(string):
 	while(y_offset < size[1]):
 		img = Image.new('RGBA', (size[0], size[1]), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		if(advcolour=="none"):
 			draw.text((0+1,1+(-size[1]+y_offset)), string, font=fnt, fill=(0,0,0))
 			draw.text((0,(-size[1]+y_offset)), string, font=fnt, fill=colourmap[colour])
@@ -102,6 +111,7 @@ def slide_effect(string):
 	for i in range(1,11):
 		img = Image.new('RGBA', (size[0], size[1]), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		if(advcolour=="none"):
 			draw.text((0+1,1-size[1]+y_offset), string, font=fnt, fill=(0,0,0))
 			draw.text((0,-size[1]+y_offset), string, font=fnt, fill=colourmap[colour])
@@ -113,6 +123,7 @@ def slide_effect(string):
 	while(y_offset < (size[1]*2)+4):
 		img = Image.new('RGBA', (size[0], size[1]), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		if(advcolour=="none"):
 			draw.text((1+0,1+(-size[1]+y_offset)), string, font=fnt, fill=(0,0,0))
 			draw.text((0,(-size[1]+y_offset)), string, font=fnt, fill=colourmap[colour])
@@ -122,7 +133,7 @@ def slide_effect(string):
 		img_set.append(img)
 		y_offset=y_offset+y_increment
 		frame = frame+1
-	multi_frame_save(img_set)
+	return multi_frame_save(img_set)
 	
 def wave_effect(string):
 	size = fnt.getsize(string)
@@ -131,6 +142,7 @@ def wave_effect(string):
 	for f in range(frames):
 		img = Image.new('RGBA', (size[0]+(1*len(string)), size[1]*3), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		for i in range(len(string)):
 			x = fnt.getsize(string[:i])[0]+(1*i)
 			amplitude = (size[1]/3)
@@ -138,25 +150,28 @@ def wave_effect(string):
 			y = size[1] + wave*amplitude
 			if(advcolour=="none"):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
+				# draw.text((x+10,y+10), string, font=fnt, fill=(8,8,8))
 				draw.text((x,y), string[i], font=fnt, fill=colourmap[colour])
+				# draw.text((x,y), string[i], font=fnt, fill=(150,150,150))
 			else:
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
 				draw.text((x,y), string[i], font=fnt, fill=advcolourmap[advcolour](f))
 		img_set.append(img)
-	multi_frame_save(img_set)
+	return multi_frame_save(img_set)
 
 def wave2_effect(string):
 	size = fnt.getsize(string)
 	img_set=[]
 	frames=20
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), size[1]*3), (255, 255, 255, 0))
+		img = Image.new('RGBA', (2+size[0]+(1*len(string)), size[1]*3), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		for i in range(len(string)):
 			x_amplitude = size[0]/(len(string)*4)
 			y_amplitude = (size[1]/4)
 			wave = math.sin((((f+1)/(frames))*math.pi*2)+(i*(math.pi/6)))
-			x = fnt.getsize(string[:i])[0] +(1*i)- wave*x_amplitude
+			x = 2+fnt.getsize(string[:i])[0] +(1*i)- wave*x_amplitude
 			y = size[1] + wave*y_amplitude
 			if(advcolour=="none"):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
@@ -165,7 +180,7 @@ def wave2_effect(string):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
 				draw.text((x,y), string[i], font=fnt, fill=advcolourmap[advcolour](f))
 		img_set.append(img)
-	multi_frame_save(img_set)
+	return multi_frame_save(img_set)
 
 def shake_effect(string):
 	size = fnt.getsize(string)
@@ -174,6 +189,7 @@ def shake_effect(string):
 	for f in range(frames):
 		img = Image.new('RGBA', (size[0]+(1*len(string)), size[1]*3), (255, 255, 255, 0))
 		draw = ImageDraw.Draw(img)
+		draw.fontmode = "1"
 		for i in range(len(string)):
 			x = fnt.getsize(string[:i])[0]+(1*i)
 			amplitude = -(size[1]/3)
@@ -197,7 +213,7 @@ def shake_effect(string):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
 				draw.text((x,y), string[i], font=fnt, fill=advcolourmap[advcolour](f))
 		img_set.append(img)
-	multi_frame_save(img_set)
+	return multi_frame_save(img_set)
 
 def flash1_colour(frame):
 	if(frame % fps*2 > fps):
@@ -317,9 +333,9 @@ def glow3_colour(frame):
 		return (R,G,B)
 	return (255,0,0)
 
-colour = "yellow"
-advcolour = "none"
-effect = "none"
+defaultcolour = "yellow"
+defaultadvcolour = "none"
+defaulteffect = "none"
 fps = 10
 colourmap = {
 	"yellow": (255,255,0),
@@ -346,7 +362,7 @@ effectmap = {
 	"shake": shake_effect
 }
 
-string = "shake:glow3:I think I got shake to work alright, it was surprisingly tricky"
+string = "glow1:wave:cdjquw4 AAAA"
 fnt = ImageFont.truetype('./runescape_uf.ttf', size=15)
 
 parse_string(string)
