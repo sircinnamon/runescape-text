@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw,ImageFont
 import math
 
-def parse_string(input, delimiter=':'):
+def parse_string(input, delimiter=':', maxlen=80):
 	global effect
 	global advcolour
 	global colour
@@ -31,7 +31,7 @@ def parse_string(input, delimiter=':'):
 		else:
 			break
 	# print("final str "+input)
-	return effectmap[effect](input)
+	return effectmap[effect](input[:maxlen])
 
 def single_frame_save(img, append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
@@ -363,6 +363,6 @@ effectmap = {
 }
 
 string = "glow1:wave:cdjquw4 \nAAAA"
-fnt = ImageFont.truetype('./runescape_uf.ttf', size=15)
+fnt = ImageFont.truetype('./runescape_uf.ttf', size=21)
 
 # parse_string(string)
