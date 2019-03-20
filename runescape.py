@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw,ImageFont
 import math
+import sys, getopt
 
 def parse_string(input, delimiter=':', maxlen=80):
 	global effect
@@ -14,7 +15,7 @@ def parse_string(input, delimiter=':', maxlen=80):
 		spl = input.split(delimiter,1);
 		# print("Parsing arg "+spl[0])
 		if(spl[0] in colourmap and has_colour==False):
-			# print("Set colour to "+spl[0])
+			print("Set colour to "+spl[0])
 			has_colour = True
 			colour = spl[0]
 			input=spl[1]
@@ -33,19 +34,18 @@ def parse_string(input, delimiter=':', maxlen=80):
 	# print("final str "+input)
 	return effectmap[effect](input[:maxlen])
 
-def single_frame_save(img, append=""):
+def single_frame_save(img, filename="out.gif", append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
-	print("Save test"+append+".gif")
-	img.save("test"+append+".gif", 'GIF',transparency=0)
-	return "test"+append+".gif"
+	print("Save {}".format(filename))
+	img.save(filename, 'GIF',transparency=0)
+	return filename
 
-def multi_frame_save(img_set, frametime=100):
-	print("Save test.gif")
-	img_set[0].save('test.gif', 'GIF', transparency=0, append_images=img_set[1:], save_all=True, duration=frametime, loop=0, disposal=2, optimize=False)
-	return "test.gif"
+def multi_frame_save(img_set, filename="out.gif", frametime=100):
+	print("Save {}".format(filename))
+	img_set[0].save(filename, 'GIF', transparency=0, append_images=img_set[1:], save_all=True, duration=frametime, loop=0, disposal=2, optimize=False)
+	return filename
 
 def no_effect(string):
-	print(advcolour)
 	if(advcolour=="none"):
 		size = fnt.getsize(string)
 		img = Image.new('RGBA', (size[0], size[1]+4), (255, 255, 255, 0))
@@ -53,7 +53,7 @@ def no_effect(string):
 		draw.fontmode = "1"
 		draw.text((0+1,2+1), string, font=fnt, fill=(0,0,0))
 		draw.text((0,2), string, font=fnt, fill=colourmap[colour])
-		return single_frame_save(img)
+		return [img]
 	else:
 		size = fnt.getsize(string)
 		img_set=[]
@@ -66,7 +66,7 @@ def no_effect(string):
 			draw.text((0,2), string, font=fnt, fill=advcolourmap[advcolour](frame))
 			img_set.append(img)
 			frame = frame+1
-		return multi_frame_save(img_set)
+		return img_set
 
 def scroll_effect(string):
 	size = fnt.getsize(string)
@@ -87,7 +87,7 @@ def scroll_effect(string):
 		img_set.append(img)
 		x_offset=x_offset+x_increment
 		frame = frame+1
-	return multi_frame_save(img_set)
+	return img_set
 
 def slide_effect(string):
 	size = fnt.getsize(string)
@@ -133,7 +133,7 @@ def slide_effect(string):
 		img_set.append(img)
 		y_offset=y_offset+y_increment
 		frame = frame+1
-	return multi_frame_save(img_set)
+	return img_set
 	
 def wave_effect(string):
 	size = fnt.getsize(string)
@@ -157,7 +157,7 @@ def wave_effect(string):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
 				draw.text((x,y), string[i], font=fnt, fill=advcolourmap[advcolour](f))
 		img_set.append(img)
-	return multi_frame_save(img_set)
+	return img_set
 
 def wave2_effect(string):
 	size = fnt.getsize(string)
@@ -180,7 +180,7 @@ def wave2_effect(string):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
 				draw.text((x,y), string[i], font=fnt, fill=advcolourmap[advcolour](f))
 		img_set.append(img)
-	return multi_frame_save(img_set)
+	return img_set
 
 def shake_effect(string):
 	size = fnt.getsize(string)
@@ -213,7 +213,7 @@ def shake_effect(string):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=(0,0,0))
 				draw.text((x,y), string[i], font=fnt, fill=advcolourmap[advcolour](f))
 		img_set.append(img)
-	return multi_frame_save(img_set)
+	return img_set
 
 def flash1_colour(frame):
 	if(frame % fps*2 > fps):
@@ -362,7 +362,33 @@ effectmap = {
 	"shake": shake_effect
 }
 
-string = "glow1:wave:cdjquw4 \nAAAA"
 fnt = ImageFont.truetype('./runescape_uf.ttf', size=21)
 
-# parse_string(string)
+if __name__ == "__main__":
+	# string = "glow1:wave:cdjquw4 \nAAAA"
+	try:
+		opts,args = getopt.getopt(sys.argv[1:], "o:c:e:")
+		instring = ""
+		outfile = "runescapetext.gif"
+		for opt, arg in opts:
+			if opt == "-o":
+				outfile = arg
+			elif opt == "-c" and arg in (list(colourmap.keys())+list(advcolourmap.keys())):
+				instring += arg+":"
+			elif opt == "-e" and arg in list(effectmap.keys()):
+				instring += arg+":"
+		instring+=" ".join(args)
+		img = parse_string(instring)
+		if(len(img)==1):
+			single_frame_save(img[0], filename=outfile)
+		else:
+			multi_frame_save(img, filename=outfile)
+	except getopt.GetoptError:
+		print("\nrunescape.py [options] <string>")
+		print("OPTIONS")
+		print("\t-o <outputfile>")
+		print("\t-c <colour>")
+		print("\t\tAllowed Colors: {}".format(",".join(list(colourmap.keys())+list(advcolourmap.keys()))))
+		print("\t-e <effect>")
+		print("\t\tAllowed Effects: {}".format(",".join(list(effectmap.keys()))))
+		sys.exit(2)

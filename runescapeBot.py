@@ -8,6 +8,7 @@ from threading import Timer, Thread
 from collections import deque
 from urllib.request import HTTPError
 import runescape
+import tempfile
 
 client = discord.Client()
 
@@ -96,7 +97,13 @@ def create_rs_text(msg):
     content = msg.content
     if(content.startswith('`') and content.endswith('`')):
         content = msg.content[1:-1]
-    filename = runescape.parse_string(content.replace(CMD_PREFIX,""))
+    fileobj = tempfile.NamedTemporaryFile(suffix=".gif",prefix="runescape-")
+    filename = fileobj.name
+    img = runescape.parse_string(content.replace(CMD_PREFIX,""))
+    if(len(img)==1):
+        runescape.single_frame_save(img[0], filename=filename)
+    else:
+        runescape.multi_frame_save(img, filename=filename)
     file = open(filename, "rb")
     yield from client.send_file(msg.channel, file)
     file.close()
