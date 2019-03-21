@@ -64,8 +64,10 @@ def no_effect(string):
 		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
-		draw.text((0+1,2+1), string, font=fnt, fill=black)
-		draw.text((0,2), string, font=fnt, fill=colourmap[colour])
+		x = 0
+		y = 2
+		draw.text((x+1,y+1), string, font=fnt, fill=black)
+		draw.text((x,y), string, font=fnt, fill=colourmap[colour])
 		return [img]
 	else:
 		size = fnt.getsize(string)
@@ -346,7 +348,7 @@ effectmap = {
 	"shake": shake_effect
 }
 
-fnt = ImageFont.truetype('./runescape_uf.ttf', size=21)
+fnt = ImageFont.truetype('./runescape_uf.ttf', size=18)
 
 if __name__ == "__main__":
 	# string = "glow1:wave:cdjquw4 \nAAAA"
