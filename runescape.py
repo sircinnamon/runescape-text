@@ -393,10 +393,11 @@ if __name__ == "__main__":
 		opts,args = getopt.getopt(sys.argv[1:], "o:c:e:")
 		instring = ""
 		outfile = "runescapetext.gif"
+		allcolours = list(colourmap.keys())+list(advcolourmap.keys())
 		for opt, arg in opts:
 			if opt == "-o":
 				outfile = arg
-			elif opt == "-c" and arg in (list(colourmap.keys())+list(advcolourmap.keys())):
+			elif opt == "-c" and arg in allcolours:
 				instring += arg+":"
 			elif opt == "-e" and arg in list(effectmap.keys()):
 				instring += arg+":"
@@ -411,7 +412,7 @@ if __name__ == "__main__":
 		print("OPTIONS")
 		print("\t-o <outputfile>")
 		print("\t-c <colour>")
-		print("\t\tAllowed Colors: {}".format(",".join(list(colourmap.keys())+list(advcolourmap.keys()))))
+		print("\t\tAllowed Colors: {}".format(",".join(allcolours)))
 		print("\t-e <effect>")
 		print("\t\tAllowed Effects: {}".format(",".join(list(effectmap.keys()))))
 		sys.exit(2)
