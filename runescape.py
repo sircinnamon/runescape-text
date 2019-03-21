@@ -258,103 +258,64 @@ def glow1_colour(frame):
 	cycle_length = fps*2
 	inc = cycle_length/4
 	frame=frame%cycle_length
-	if(frame>=inc*3):
-		# green to cyan
-		R=0
-		G=128+round(128*((frame%inc)/inc))
-		B=round(255*((frame%inc)/inc))
-		return (R,G,B)
-	elif(frame>=inc*2):
-		# yellow to green
-		R=255-round(255*((frame%inc)/inc))
-		G=255-round(128*((frame%inc)/inc))
-		B=0
-		return (R,G,B)
-	elif(frame>=inc*1):
-		# Orange to yellow
-		R=255
-		G=128+round(128*((frame%inc)/inc))
-		B=0
-		return (R,G,B)
-	else:
-		# Red to orange
-		R=255
-		G=round(128*(frame/inc))
-		B=0
-		return (R,G,B)
-	return (255,0,0)
+	c_list = [
+		(255,0,0),
+		(255,128,0),
+		(255,255,0),
+		(0,128,0),
+		(0,255,255)
+	]
+	start_c = c_list[math.floor(frame/inc)]
+	end_c = c_list[1+math.floor(frame/inc)]
+	prog = (frame%inc)/inc
+	return calculate_gradient_pos(start_c, end_c ,prog)
+
 def glow2_colour(frame):
-	# red-pink-purple-blue-purple-
+	# red-pink-purple-blue-purple-red
 	cycle_length = fps*2
 	inc = cycle_length/5
 	frame=frame%cycle_length
-	if(frame>=inc*4):
-		# purple to red
-		R=128+round(128*((frame%inc)/inc))
-		G=0
-		B=128-round(128*((frame%inc)/inc))
-		return (R,G,B)
-	elif(frame>=inc*3):
-		# blue to purple
-		R=round(128*((frame%inc)/inc))
-		G=0
-		B=255-round(128*((frame%inc)/inc))
-		return (R,G,B)
-	elif(frame>=inc*2):
-		# purple to blue
-		R=128-round(128*((frame%inc)/inc))
-		G=0
-		B=255+round(128*((frame%inc)/inc))
-		return (R,G,B)
-	elif(frame>=inc*1):
-		# pink to purple
-		R=255-round(128*((frame%inc)/inc))
-		G=0
-		B=128
-		return (R,G,B)
-	else:
-		# red to pink
-		R=255
-		G=0
-		B=round(128*(frame/inc))
-		return (R,G,B)
-	return (255,0,0)
+	c_list = [
+		(255,0,0),
+		(255,0,128),
+		(128,0,128),
+		(0,0,255),
+		(128,0,128),
+		(255,0,0)
+	]
+	start_c = c_list[math.floor(frame/inc)]
+	end_c = c_list[1+math.floor(frame/inc)]
+	prog = (frame%inc)/inc
+	return calculate_gradient_pos(start_c, end_c ,prog)
+
 def glow3_colour(frame):
 	# white-light green-dark green-light green-white-cyan
 	cycle_length = fps*2
 	inc = cycle_length/5
-	frame=frame%cycle_length
-	if(frame>=inc*4):
-		# white to cyan
-		R=255-round(255*((frame%inc)/inc))
-		G=255
-		B=255
-		return (R,G,B)
-	elif(frame>=inc*3):
-		# light green to white
-		R=round(255*((frame%inc)/inc))
-		G=255
-		B=round(255*((frame%inc)/inc))
-		return (R,G,B)
-	elif(frame>=inc*2):
-		# dark green to light green
-		R=0
-		G=128+round(128*((frame%inc)/inc))
-		B=0
-		return (R,G,B)
-	elif(frame>=inc*1):
-		# light green to dark green
-		R=0
-		G=255-round(128*((frame%inc)/inc))
-		B=0
-		return (R,G,B)
-	else:
-		# white to light green
-		R=255
-		G=255-round(128*((frame%inc)/inc))
-		B=255
-		return (R,G,B)
-	return (255,0,0)
+	frame = frame%cycle_length
+	c_list = [
+		(255,255,255),
+		(0,255,0),
+		(0,128,0),
+		(0,255,0),
+		(255,255,255),
+		(0,255,255)
+	]
+	start_c = c_list[math.floor(frame/inc)]
+	end_c = c_list[1+math.floor(frame/inc)]
+	prog = (frame%inc)/inc
+	return calculate_gradient_pos(start_c, end_c ,prog)
+
+
+def calculate_gradient_pos(start, end, progress):
+	r_diff = end[0]-start[0]
+	g_diff = end[1]-start[1]
+	b_diff = end[2]-start[2]
+	return (
+		start[0]+round(r_diff*progress),
+		start[1]+round(g_diff*progress),
+		start[2]+round(b_diff*progress)
+	)
 
 defaultcolour = "yellow"
 defaultadvcolour = "none"
