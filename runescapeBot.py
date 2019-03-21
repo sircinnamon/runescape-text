@@ -54,7 +54,6 @@ def on_message(message):
         logstring+=("[PRIVATE] {}: ".format(message.author.name))
     content = message.clean_content
     logstring+=content
-    logging.info(logstring)
 
     if(content.startswith('`') and content.endswith('`')):
         content = message.content[1:-1]
@@ -62,12 +61,15 @@ def on_message(message):
     if(message.author == client.user):
         #Ignore own messages
         return
+
     for command in command_set:
         for command_str in command["commands"]:
             if content.startswith(CMD_PREFIX+command_str):
+                logging.info(logstring)
                 yield from client.send_typing(message.channel)
                 yield from command["function"](message)
                 return
+    logging.debug(logstring)
 
 @client.event
 @asyncio.coroutine
@@ -99,6 +101,7 @@ def create_rs_text(msg):
         content = msg.content[1:-1]
     fileobj = tempfile.NamedTemporaryFile(suffix=".gif",prefix="runescape-")
     filename = fileobj.name
+    logging.info("Saving gif for {} at {}".format(msg.id, filename))
     img = runescape.parse_string(content.replace(CMD_PREFIX,""))
     if(len(img)==1):
         runescape.single_frame_save(img[0], filename=filename)
@@ -107,6 +110,7 @@ def create_rs_text(msg):
     file = open(filename, "rb")
     yield from client.send_file(msg.channel, file)
     file.close()
+    logging.info("{} uploaded and closed".format(filename))
 
 command_set = [
     {

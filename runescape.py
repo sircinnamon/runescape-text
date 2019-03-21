@@ -15,17 +15,17 @@ def parse_string(input, delimiter=':', maxlen=80):
 		spl = input.split(delimiter,1);
 		# print("Parsing arg "+spl[0])
 		if(spl[0] in colourmap and has_colour==False):
-			print("Set colour to "+spl[0])
+			# print("Set colour to "+spl[0])
 			has_colour = True
 			colour = spl[0]
 			input=spl[1]
 		elif(spl[0] in advcolourmap and has_colour==False):
-			print("Set advcolour to "+spl[0])
+			# print("Set advcolour to "+spl[0])
 			has_colour = True
 			advcolour = spl[0]
 			input=spl[1]
 		elif(spl[0] in effectmap and has_effect==False):
-			print("Set effect to "+spl[0])
+			# print("Set effect to "+spl[0])
 			has_effect=True
 			effect=spl[0]
 			input=spl[1]
@@ -36,12 +36,12 @@ def parse_string(input, delimiter=':', maxlen=80):
 
 def single_frame_save(img, filename="out.gif", append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
-	print("Save {}".format(filename))
+	# print("Save {}".format(filename))
 	img.save(filename, 'GIF',transparency=0)
 	return filename
 
 def multi_frame_save(img_set, filename="out.gif", frametime=100):
-	print("Save {}".format(filename))
+	# print("Save {}".format(filename))
 	img_set[0].save(filename, 'GIF', transparency=0, append_images=img_set[1:], save_all=True, duration=frametime, loop=0, disposal=2, optimize=False)
 	return filename
 
