@@ -99,13 +99,17 @@ def create_rs_text(msg):
     content = msg.content
     if(content.startswith('`') and content.endswith('`')):
         content = msg.content[1:-1]
-    fileobj = tempfile.NamedTemporaryFile(suffix=".gif",prefix="runescape-")
-    filename = fileobj.name
-    logging.info("Saving gif for {} at {}".format(msg.id, filename))
+    logging.info("Parsing message {}".format(msg.id))
     img = runescape.parse_string(content.replace(CMD_PREFIX,""))
     if(len(img)==1):
+        fileobj = tempfile.NamedTemporaryFile(suffix=".png",prefix="runescape-")
+        filename = fileobj.name
+        logging.info("Saving png for {} at {}".format(msg.id, filename))
         runescape.single_frame_save(img[0], filename=filename)
     else:
+        fileobj = tempfile.NamedTemporaryFile(suffix=".gif",prefix="runescape-")
+        filename = fileobj.name
+        logging.info("Saving gif for {} at {}".format(msg.id, filename))
         runescape.multi_frame_save(img, filename=filename)
     file = open(filename, "rb")
     yield from client.send_file(msg.channel, file)

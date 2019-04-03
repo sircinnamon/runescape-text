@@ -38,10 +38,10 @@ def parse_string(input, delimiter=':', maxlen=80):
 	# print("final str "+input)
 	return effectmap[effect](input[:maxlen])
 
-def single_frame_save(img, filename="out.gif", append=""):
+def single_frame_save(img, filename="out.png", append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
 	# print("Save {}".format(filename))
-	img.save(filename, 'GIF',transparency=0)
+	img.save(filename, 'PNG')
 	return filename
 
 def multi_frame_save(img_set, filename="out.gif", frametime=100):
