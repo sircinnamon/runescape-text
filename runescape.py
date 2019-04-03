@@ -115,7 +115,7 @@ def slide_effect(string):
 	y_increment = max(round(size[1]/10), 2)
 	frame = 0
 	while(y_offset < size[1]):
-		img = Image.new('RGBA', (size[0], size[1]), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -130,7 +130,7 @@ def slide_effect(string):
 		y_offset=y_offset+y_increment
 		frame = frame+1
 	for i in range(1,11):
-		img = Image.new('RGBA', (size[0], size[1]), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -144,7 +144,7 @@ def slide_effect(string):
 		img_set.append(img)
 		frame = frame+1
 	while(y_offset < (size[1]*2)+4):
-		img = Image.new('RGBA', (size[0], size[1]), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
