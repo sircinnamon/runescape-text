@@ -129,6 +129,7 @@ if(discord_token == None):
     os.environ['DISCORD_TOKEN'] = token
 os.environ['DISCORD_TOKEN'] = discord_token
 
+os.makedirs("logs", exist_ok=True)
 file = open("logs/bot.log", "a+")
 # file.close()
 logging.basicConfig(filename="logs/bot.log",format="(%(asctime)s) %(levelname)s:%(message)s",level=logging.INFO)
