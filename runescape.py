@@ -36,7 +36,15 @@ def parse_string(input, delimiter=':', maxlen=80):
 		else:
 			break
 	# print("final str "+input)
-	return effectmap[effect](input[:maxlen])
+	if(len(input[:maxlen].split("\n"))>1):
+		line_arr=[]
+		max_line_len=max(len(x) for x in input[:maxlen].split("\n"))
+		for line in input[:maxlen].split("\n"):
+			line="{line: <{width}}".format(line=line, width=max_line_len)
+			line_arr.append(effectmap[effect](line))
+		return line_merge(line_arr)
+	else:
+		return effectmap[effect](input[:maxlen])
 
 def single_frame_save(img, filename="out.png", append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
@@ -164,15 +172,15 @@ def wave_effect(string):
 	size = fnt.getsize(string)
 	img_set=[]
 	frames=20
+	amplitude = (size[1]/3)
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), size[1]*3), transparent)
+		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(amplitude*2))), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
 			x = fnt.getsize(string[:i])[0]+(1*i)
-			amplitude = (size[1]/3)
 			wave = math.sin((((f+1)/(frames))*math.pi*2)+(i*(math.pi/6)))
-			y = size[1] + wave*amplitude
+			y = amplitude + wave*amplitude
 			if(advcolour=="none"):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=black)
 				# draw.text((x+10,y+10), string, font=fnt, fill=(8,8,8))
@@ -188,16 +196,16 @@ def wave2_effect(string):
 	size = fnt.getsize(string)
 	img_set=[]
 	frames=20
+	x_amplitude = size[0]/(len(string)*4)
+	y_amplitude = (size[1]/4)
 	for f in range(frames):
-		img = Image.new('RGBA', (2+size[0]+(1*len(string)), size[1]*3), transparent)
+		img = Image.new('RGBA', (2+size[0]+(1*len(string)), round(size[1]+(y_amplitude*2))), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
-			x_amplitude = size[0]/(len(string)*4)
-			y_amplitude = (size[1]/4)
 			wave = math.sin((((f+1)/(frames))*math.pi*2)+(i*(math.pi/6)))
 			x = 2+fnt.getsize(string[:i])[0] +(1*i)- wave*x_amplitude
-			y = size[1] + wave*y_amplitude
+			y = y_amplitude + wave*y_amplitude
 			if(advcolour=="none"):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=black)
 				draw.text((x,y), string[i], font=fnt, fill=colourmap[colour])
@@ -211,13 +219,14 @@ def shake_effect(string):
 	size = fnt.getsize(string)
 	img_set=[]
 	frames=20
+	max_amplitude = size[1]/3
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), size[1]*3), transparent)
+		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(max_amplitude*2))), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
 			x = fnt.getsize(string[:i])[0]+(1*i)
-			amplitude = -(size[1]/3)
+			amplitude = -max_amplitude
 			current_peak = (f/frames)*100
 			if i > current_peak:
 				rad = 0
@@ -230,7 +239,7 @@ def shake_effect(string):
 				amplitude = amplitude*0.75
 			if(rad>(math.pi*2)):
 				amplitude = amplitude*0.33
-			y = size[1] + wave*amplitude
+			y = max_amplitude + wave*amplitude
 			if(advcolour=="none"):
 				draw.text((x+1,y+1), string[i], font=fnt, fill=black)
 				draw.text((x,y), string[i], font=fnt, fill=colourmap[colour])
@@ -318,6 +327,24 @@ def calculate_gradient_pos(start, end, progress):
 		start[1]+round(g_diff*progress),
 		start[2]+round(b_diff*progress)
 	)
+
+def line_merge(arr):
+	if(len(arr)==1):
+		return arr[0]
+	elif(len(arr)>1):
+		mergedframes=[]
+		frames=zip(arr[0], arr[1])
+		for frame in frames:
+			width=frame[0].size[0]+frame[1].size[0]
+			height=frame[0].size[1]+frame[1].size[1]
+			newframe = Image.new('RGBA', (width, height), transparent)
+			newframe.paste(frame[0], (0,0))
+			newframe.paste(frame[1], (0,frame[0].size[1]))
+			mergedframes.append(newframe)
+		arr[0]=mergedframes
+		del arr[1]
+		return line_merge(arr)
+
 
 defaultcolour = "yellow"
 defaultadvcolour = "none"
