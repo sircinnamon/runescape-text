@@ -174,7 +174,7 @@ def wave_effect(string):
 	frames=20
 	amplitude = (size[1]/3)
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(amplitude*2))), transparent)
+		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(amplitude*2)+0.5)), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -199,7 +199,7 @@ def wave2_effect(string):
 	x_amplitude = size[0]/(len(string)*4)
 	y_amplitude = (size[1]/4)
 	for f in range(frames):
-		img = Image.new('RGBA', (2+size[0]+(1*len(string)), round(size[1]+(y_amplitude*2))), transparent)
+		img = Image.new('RGBA', (2+size[0]+(1*len(string)), round(size[1]+(y_amplitude*2)+0.5)), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -221,7 +221,7 @@ def shake_effect(string):
 	frames=20
 	max_amplitude = size[1]/3
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(max_amplitude*2))), transparent)
+		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(max_amplitude*2)+0.5)), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
