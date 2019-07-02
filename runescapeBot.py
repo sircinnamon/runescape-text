@@ -32,12 +32,12 @@ def on_ready():
     print(client.user.id)
     print('------')
     print("Current servers:")
-    for server in client.servers:
+    for server in client.guilds:
         print("* {} ({})".format(server.name,server.id))
         logging.info("Connected to server {} ({})".format(server.name,server.id))
     print('------')
     logging.info("Logged in successfully as {} [{}]".format(client.user.name, client.user.id))
-    yield from client.change_presence(game=discord.Game(name='Runescape'))
+    yield from client.change_presence(activity=discord.Game(name='Runescape'))
 
 @client.event
 @asyncio.coroutine
@@ -46,12 +46,13 @@ def on_message(message):
     global current_key
 
     logstring = ""
-    if(message.server is not None):
-        logstring+=("[{}/{}] {}: ".format(message.server.name,message.channel.name,message.author.name))
-    elif(message.channel.is_private and message.channel.type is discord.ChannelType.group):
-        logstring+=("[PRIVATE/{}] {}: ".format(message.channel.name,message.author.name))
-    elif(message.channel.is_private):
+    if(isinstance(message.channel, discord.abc.GuildChannel)):
+        logstring+=("[{}/{}] {}: ".format(message.guild.name,message.channel.name,message.author.name))
+    elif(isinstance(message.channel, discord.abc.PrivateChannel)):
         logstring+=("[PRIVATE] {}: ".format(message.author.name))
+    else:
+        logstring+=("[UNKNOWN] {}: ".format(message.author.name))
+
     content = message.clean_content
     logstring+=content
 
@@ -66,8 +67,8 @@ def on_message(message):
         for command_str in command["commands"]:
             if content.startswith(CMD_PREFIX+command_str):
                 logging.info(logstring)
-                yield from client.send_typing(message.channel)
-                yield from command["function"](message)
+                with message.channel.typing():
+                    yield from command["function"](message)
                 return
     logging.debug(logstring)
 
@@ -92,7 +93,7 @@ def get_key(key_name):
 
 @asyncio.coroutine
 def send_msg(channel, msg):
-    yield from client.send_message(channel, msg)
+    yield from channel.send(msg)
 
 @asyncio.coroutine
 def create_rs_text(msg):
@@ -111,9 +112,7 @@ def create_rs_text(msg):
         filename = fileobj.name
         logging.info("Saving gif for {} at {}".format(msg.id, filename))
         runescape.multi_frame_save(img, filename=filename)
-    file = open(filename, "rb")
-    yield from client.send_file(msg.channel, file)
-    file.close()
+    yield from msg.channel.send(file=discord.File(filename))
     logging.info("{} uploaded and closed".format(filename))
 
 command_set = [
