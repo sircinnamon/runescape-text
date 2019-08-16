@@ -124,8 +124,7 @@ command_set = [
 
 discord_token = get_key("discord_bot_token")
 if(discord_token == None):
-    token = input("You must specify the discord bot token: ")
-    os.environ['DISCORD_TOKEN'] = token
+    discord_token = input("You must specify the discord bot token: ")
 os.environ['DISCORD_TOKEN'] = discord_token
 
 os.makedirs("logs", exist_ok=True)
