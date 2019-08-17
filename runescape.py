@@ -46,16 +46,16 @@ def parse_string(input, delimiter=':', maxlen=80):
 	else:
 		return effectmap[effect](input[:maxlen])
 
-def single_frame_save(img, filename="out.png", append=""):
+def single_frame_save(img, file="out.png", append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
-	# print("Save {}".format(filename))
-	img.save(filename, 'PNG')
-	return filename
+	# print("Save {}".format(file))
+	img.save(file, 'PNG')
+	return file
 
-def multi_frame_save(img_set, filename="out.gif", frametime=100):
-	# print("Save {}".format(filename))
+def multi_frame_save(img_set, file="out.gif", frametime=100):
+	# print("Save {}".format(file))
 	img_set[0].save(
-		filename,
+		file,
 		'GIF', transparency=0,
 		append_images=img_set[1:],
 		save_all=True,
@@ -394,9 +394,9 @@ if __name__ == "__main__":
 		instring+=" ".join(args)
 		img = parse_string(instring)
 		if(len(img)==1):
-			single_frame_save(img[0], filename=outfile)
+			single_frame_save(img[0], file=outfile)
 		else:
-			multi_frame_save(img, filename=outfile)
+			multi_frame_save(img, file=outfile)
 	except getopt.GetoptError:
 		print("\nrunescape.py [options] <string>")
 		print("OPTIONS")

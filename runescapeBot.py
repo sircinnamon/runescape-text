@@ -106,13 +106,13 @@ def create_rs_text(msg):
         fileobj = tempfile.NamedTemporaryFile(suffix=".png",prefix="runescape-")
         filename = fileobj.name
         logging.info("Saving png for {} at {}".format(msg.id, filename))
-        runescape.single_frame_save(img[0], filename=filename)
+        runescape.single_frame_save(img[0], file=fileobj)
     else:
         fileobj = tempfile.NamedTemporaryFile(suffix=".gif",prefix="runescape-")
         filename = fileobj.name
         logging.info("Saving gif for {} at {}".format(msg.id, filename))
-        runescape.multi_frame_save(img, filename=filename)
-    yield from msg.channel.send(file=discord.File(filename))
+        runescape.multi_frame_save(img, file=fileobj)
+    yield from msg.channel.send(file=discord.File(fileobj))
     logging.info("{} uploaded and closed".format(filename))
 
 command_set = [
