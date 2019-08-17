@@ -102,17 +102,22 @@ def create_rs_text(msg):
         content = msg.content[1:-1]
     logging.info("Parsing message {}".format(msg.id))
     img = runescape.parse_string(content.replace(CMD_PREFIX,""))
+    filename = ""
+    fileobj = None
     if(len(img)==1):
         fileobj = tempfile.NamedTemporaryFile(suffix=".png",prefix="runescape-")
         filename = fileobj.name
         logging.info("Saving png for {} at {}".format(msg.id, filename))
-        runescape.single_frame_save(img[0], file=fileobj)
+        runescape.single_frame_save(img[0], file=fileobj.file)
+        fileobj.file.flush()
     else:
         fileobj = tempfile.NamedTemporaryFile(suffix=".gif",prefix="runescape-")
         filename = fileobj.name
         logging.info("Saving gif for {} at {}".format(msg.id, filename))
-        runescape.multi_frame_save(img, file=fileobj)
-    yield from msg.channel.send(file=discord.File(fileobj))
+        runescape.multi_frame_save(img, file=fileobj.file)
+        fileobj.file.flush()
+    fileobj.file.seek(0)
+    yield from msg.channel.send(file=discord.File(fileobj.file, filename=filename))
     logging.info("{} uploaded and closed".format(filename))
 
 command_set = [

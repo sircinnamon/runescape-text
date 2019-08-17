@@ -64,7 +64,7 @@ def multi_frame_save(img_set, file="out.gif", frametime=100):
 		disposal=2,
 		optimize=False
 	)
-	return filename
+	return file
 
 def no_effect(string):
 	if(advcolour=="none"):
