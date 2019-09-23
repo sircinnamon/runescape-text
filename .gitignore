@@ -1,5 +1,5 @@
 __pycache__
-logs
-.keyfile
 *.gif
-runescape/*
+dist/*
+build/*
+*.egg-info
