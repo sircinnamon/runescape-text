@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw,ImageFont
 import math
-import sys, getopt
+import sys, getopt, os
 
 # Preset colors
 black = (0,0,0)
@@ -375,7 +375,7 @@ effectmap = {
 	"shake": shake_effect
 }
 
-fnt = ImageFont.truetype('./runescape_uf.ttf', size=18)
+fnt = ImageFont.truetype(os.path.join(os.path.dirname(__file__),'data/runescape_uf.ttf'), size=18)
 
 if __name__ == "__main__":
 	# string = "glow1:wave:cdjquw4 \nAAAA"
@@ -398,7 +398,7 @@ if __name__ == "__main__":
 		else:
 			multi_frame_save(img, file=outfile)
 	except getopt.GetoptError:
-		print("\nrunescape.py [options] <string>")
+		print("\nrunescape_text.py [options] <string>")
 		print("OPTIONS")
 		print("\t-o <outputfile>")
 		print("\t-c <colour>")

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="runescape-text",
-	version="1.0.0",
+	version="1.0.4",
 	author="Riley Lahd",
 	author_email="sircinnamon@gmail.com",
 	description="A program for generating runescape-chat-like images of text.",
@@ -19,4 +19,8 @@ setuptools.setup(
 		"Operating System :: OS Independent",
 	],
 	python_requires='>=3.6',
+    install_requires=[
+        "pillow",
+    ],
+    package_data={"":["data/runescape_uf.ttf"]},
 )
