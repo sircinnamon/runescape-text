@@ -3,7 +3,7 @@ import math
 import sys, getopt, os
 
 # Preset colors
-black = (0,0,0)
+black = (0,0,0,255)
 transparent = (255, 255, 255, 0)
 
 def parse_string(input, delimiter=':', maxlen=80):
@@ -49,6 +49,19 @@ def parse_string(input, delimiter=':', maxlen=80):
 def single_frame_save(img, file="out.png", append=""):
 	# img.save('test.gif', 'GIF', transparency=0)
 	# print("Save {}".format(file))
+	p = img.getpalette()
+	# First colour in palette is the bg, and should be transparent
+	tr = [p[0], p[1], p[2]]
+	img = img.convert("RGBA")
+	px = img.getdata()
+
+	newpx = []
+	for p in px:
+	    if p[0] == tr[0] and p[1] == tr[1] and p[2] == tr[2]:
+	        newpx.append((tr[0], tr[1], tr[2], 0))
+	    else:
+	        newpx.append(p)
+	img.putdata(newpx)
 	img.save(file, 'PNG')
 	return file
 
@@ -69,7 +82,7 @@ def multi_frame_save(img_set, file="out.gif", frametime=100):
 def no_effect(string):
 	if(advcolour=="none"):
 		size = fnt.getsize(string)
-		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
+		img = Image.new('P', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -82,7 +95,7 @@ def no_effect(string):
 		img_set=[]
 		frame = 0
 		while(frame < fps*4):
-			img = Image.new('RGBA', (size[0], size[1]+4), transparent)
+			img = Image.new('P', (size[0], size[1]+4), transparent)
 			draw = ImageDraw.Draw(img)
 			draw.fontmode = "1"
 			x = 0
@@ -100,7 +113,7 @@ def scroll_effect(string):
 	x_increment = max(round(size[0]/30), 3)
 	frame = 0
 	while(x_offset < (size[0]*2)+4):
-		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
+		img = Image.new('P', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = size[0]+1-x_offset
@@ -123,7 +136,7 @@ def slide_effect(string):
 	y_increment = max(round(size[1]/10), 2)
 	frame = 0
 	while(y_offset < size[1]):
-		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
+		img = Image.new('P', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -138,7 +151,7 @@ def slide_effect(string):
 		y_offset=y_offset+y_increment
 		frame = frame+1
 	for i in range(1,11):
-		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
+		img = Image.new('P', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -152,7 +165,7 @@ def slide_effect(string):
 		img_set.append(img)
 		frame = frame+1
 	while(y_offset < (size[1]*2)+4):
-		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
+		img = Image.new('P', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -174,7 +187,7 @@ def wave_effect(string):
 	frames=20
 	amplitude = (size[1]/3)
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(amplitude*2)+0.5)), transparent)
+		img = Image.new('P', (size[0]+(1*len(string)), round(size[1]+(amplitude*2)+0.5)), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -199,7 +212,7 @@ def wave2_effect(string):
 	x_amplitude = size[0]/(len(string)*4)
 	y_amplitude = (size[1]/4)
 	for f in range(frames):
-		img = Image.new('RGBA', (2+size[0]+(1*len(string)), round(size[1]+(y_amplitude*2)+0.5)), transparent)
+		img = Image.new('P', (2+size[0]+(1*len(string)), round(size[1]+(y_amplitude*2)+0.5)), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -221,7 +234,7 @@ def shake_effect(string):
 	frames=20
 	max_amplitude = size[1]/3
 	for f in range(frames):
-		img = Image.new('RGBA', (size[0]+(1*len(string)), round(size[1]+(max_amplitude*2)+0.5)), transparent)
+		img = Image.new('P', (size[0]+(1*len(string)), round(size[1]+(max_amplitude*2)+0.5)), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -337,7 +350,7 @@ def line_merge(arr):
 		for frame in frames:
 			width=frame[0].size[0]+frame[1].size[0]
 			height=frame[0].size[1]+frame[1].size[1]
-			newframe = Image.new('RGBA', (width, height), transparent)
+			newframe = Image.new('P', (width, height), transparent)
 			newframe.paste(frame[0], (0,0))
 			newframe.paste(frame[1], (0,frame[0].size[1]))
 			mergedframes.append(newframe)
