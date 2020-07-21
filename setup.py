@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="runescape-text",
-	version="1.0.4",
+	version="1.1.0",
 	author="Riley Lahd",
 	author_email="sircinnamon@gmail.com",
 	description="A program for generating runescape-chat-like images of text.",
