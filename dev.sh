@@ -1,0 +1,1 @@
+docker run --rm -it -v $(pwd):/python -p 8001:8001 pillow-test:latest sh
