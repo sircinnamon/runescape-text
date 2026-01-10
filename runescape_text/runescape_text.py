@@ -1,10 +1,10 @@
-from PIL import Image, ImageDraw,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import math
 import sys, getopt, os
 
 # Preset colors
 black = (0,0,0,255)
-transparent = (255,255,254) # Hope this color never shows up....
+transparent = (0, 0, 0, 0)
 
 def parse_string(input, delimiter=':', maxlen=80):
 	global effect
@@ -47,37 +47,23 @@ def parse_string(input, delimiter=':', maxlen=80):
 		return effectmap[effect](input[:maxlen])
 
 def single_frame_save(img, file="out.png", append=""):
-	# img.save('test.gif', 'GIF', transparency=0)
 	# print("Save {}".format(file))
-	p = img.getpalette()
-	# First colour in palette is the bg, and should be transparent
-	tr = [p[0], p[1], p[2]]
-	img = img.convert("RGBA")
-	px = img.get_flattened_data()
-
-	newpx = []
-	for p in px:
-	    if p[0] == tr[0] and p[1] == tr[1] and p[2] == tr[2]:
-	        newpx.append((tr[0], tr[1], tr[2], 0))
-	    else:
-	        newpx.append(p)
-	img.putdata(newpx)
 	img.save(file, 'PNG')
 	return file
 
-def multi_frame_save(img_set, file="out.gif", frametime=100):
-	# print("Save {}".format(file))
-	img_set[0].save(
-		file,
-		'GIF', transparency=0,
-		append_images=img_set[1:],
-		save_all=True,
-		duration=frametime,
-		loop=0,
-		disposal=2,
-		optimize=False
-	)
-	return file
+def multi_frame_save(img_set, file="out.gif", frametime=100):	
+    # Transparency conversion done in save automatically
+    img_set[0].save(
+        file,
+        'GIF',
+        append_images=img_set[1:],
+        save_all=True,
+        duration=frametime,
+        loop=0,
+        disposal=2,
+        optimize=False
+    )
+    return file
 
 def font_size(font, string):
 	# Swap in for deprecated getsize
@@ -90,7 +76,7 @@ def no_effect(string):
 	size = font_size(fnt, string)
 	# print(size)
 	if(advcolour=="none"):
-		img = Image.new('P', (size[0], size[1]+4), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -102,7 +88,7 @@ def no_effect(string):
 		img_set=[]
 		frame = 0
 		while(frame < fps*4):
-			img = Image.new('P', (size[0], size[1]+4), transparent)
+			img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 			draw = ImageDraw.Draw(img)
 			draw.fontmode = "1"
 			x = 0
@@ -120,7 +106,7 @@ def scroll_effect(string):
 	x_increment = max(round(size[0]/30), 3)
 	frame = 0
 	while(x_offset < (size[0]*2)+4):
-		img = Image.new('P', (size[0], size[1]+4), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = size[0]+1-x_offset
@@ -143,7 +129,7 @@ def slide_effect(string):
 	y_increment = max(round(size[1]/10), 2)
 	frame = 0
 	while(y_offset < size[1]):
-		img = Image.new('P', (size[0], size[1]+4), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -158,7 +144,7 @@ def slide_effect(string):
 		y_offset=y_offset+y_increment
 		frame = frame+1
 	for i in range(1,11):
-		img = Image.new('P', (size[0], size[1]+4), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -172,7 +158,7 @@ def slide_effect(string):
 		img_set.append(img)
 		frame = frame+1
 	while(y_offset < (size[1]*2)+4):
-		img = Image.new('P', (size[0], size[1]+4), transparent)
+		img = Image.new('RGBA', (size[0], size[1]+4), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		x = 0
@@ -194,7 +180,7 @@ def wave_effect(string):
 	frames=20
 	amplitude = (size[1]/3)
 	for f in range(frames):
-		img = Image.new('P', (size[0]+len(string), math.ceil(size[1]+(amplitude*2))+1), transparent)
+		img = Image.new('RGBA', (size[0]+len(string), math.ceil(size[1]+(amplitude*2))+1), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -221,7 +207,7 @@ def wave2_effect(string):
 	x_amplitude = size[0]/(len(string)*4)
 	y_amplitude = (size[1]/4)
 	for f in range(frames):
-		img = Image.new('P', (size[0]+len(string)+math.ceil(x_amplitude)+1, math.ceil(size[1]+(y_amplitude*2))+1), transparent)
+		img = Image.new('RGBA', (size[0]+len(string)+math.ceil(x_amplitude)+1, math.ceil(size[1]+(y_amplitude*2))+1), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -246,7 +232,7 @@ def shake_effect(string):
 	frames=20
 	max_amplitude = size[1]/3
 	for f in range(frames):
-		img = Image.new('P', (size[0]+(1*len(string)), math.ceil(size[1]+(max_amplitude*2))+1), transparent)
+		img = Image.new('RGBA', (size[0]+(1*len(string)), math.ceil(size[1]+(max_amplitude*2))+1), transparent)
 		draw = ImageDraw.Draw(img)
 		draw.fontmode = "1"
 		for i in range(len(string)):
@@ -285,23 +271,23 @@ def flash2_colour(frame):
 	if(frame % fps*2 > fps):
 		return colourmap["cyan"]
 	else:
-		return (0,0,255)
+		return (0,0,255,255)
 def flash3_colour(frame):
 	if(frame % fps*2 > fps):
 		return colourmap["green"]
 	else:
-		return (0,255,0)
+		return (0,255,0,255)
 def glow1_colour(frame):
 	# red-orange-yellow-green-cyan
 	cycle_length = fps*2
 	inc = cycle_length/4
 	frame=frame%cycle_length
 	c_list = [
-		(255,0,0),
-		(255,128,0),
-		(255,255,0),
-		(0,128,0),
-		(0,255,255)
+		(255,0,0,255),
+		(255,128,0,255),
+		(255,255,0,255),
+		(0,128,0,255),
+		(0,255,255,255)
 	]
 	start_c = c_list[math.floor(frame/inc)]
 	end_c = c_list[1+math.floor(frame/inc)]
@@ -314,12 +300,12 @@ def glow2_colour(frame):
 	inc = cycle_length/5
 	frame=frame%cycle_length
 	c_list = [
-		(255,0,0),
-		(255,0,128),
-		(128,0,128),
-		(0,0,255),
-		(128,0,128),
-		(255,0,0)
+		(255,0,0,255),
+		(255,0,128,255),
+		(128,0,128,255),
+		(0,0,255,255),
+		(128,0,128,255),
+		(255,0,0,255)
 	]
 	start_c = c_list[math.floor(frame/inc)]
 	end_c = c_list[1+math.floor(frame/inc)]
@@ -332,12 +318,12 @@ def glow3_colour(frame):
 	inc = cycle_length/5
 	frame = frame%cycle_length
 	c_list = [
-		(255,255,255),
-		(0,255,0),
-		(0,128,0),
-		(0,255,0),
-		(255,255,255),
-		(0,255,255)
+		(255,255,255,255),
+		(0,255,0,255),
+		(0,128,0,255),
+		(0,255,0,255),
+		(255,255,255,255),
+		(0,255,255,255)
 	]
 	start_c = c_list[math.floor(frame/inc)]
 	end_c = c_list[1+math.floor(frame/inc)]
@@ -352,7 +338,8 @@ def calculate_gradient_pos(start, end, progress):
 	return (
 		start[0]+round(r_diff*progress),
 		start[1]+round(g_diff*progress),
-		start[2]+round(b_diff*progress)
+		start[2]+round(b_diff*progress),
+		255
 	)
 
 def line_merge(arr):
@@ -364,7 +351,7 @@ def line_merge(arr):
 		for frame in frames:
 			width=frame[0].size[0]+frame[1].size[0]
 			height=frame[0].size[1]+frame[1].size[1]
-			newframe = Image.new('P', (width, height), transparent)
+			newframe = Image.new('RGBA', (width, height), transparent)
 			newframe.paste(frame[0], (0,0))
 			newframe.paste(frame[1], (0,frame[0].size[1]))
 			mergedframes.append(newframe)
@@ -378,12 +365,12 @@ defaultadvcolour = "none"
 defaulteffect = "none"
 fps = 10
 colourmap = {
-	"yellow": (255,255,0),
-	"white": (255,255,255),
-	"cyan": (0,255,255),
-	"red": (255,0,0),
-	"green": (0,128,0),
-	"purple": (128,0,128)
+	"yellow": (255,255,0,255),
+	"white": (255,255,255,255),
+	"cyan": (0,255,255,255),
+	"red": (255,0,0,255),
+	"green": (0,128,0,255),
+	"purple": (128,0,128,255)
 }
 advcolourmap = {
 	"flash1": flash1_colour,
