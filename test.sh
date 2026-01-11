@@ -38,5 +38,8 @@ python3 runescape_text/runescape_text.py -o testoutput/4_10_Omg.png Omg
 python3 runescape_text/runescape_text.py -o testoutput/4_11_Omg.gif wave:Omg
 python3 runescape_text/runescape_text.py -o testoutput/4_12_Omg_glow.gif wave:glow1:Omg
 
+# Large file test
+python3 runescape_text/runescape_text.py -o testoutput/5_1_large.gif scroll:glow1:This will have many frames
+
 cat test.html > testoutput/index.html
 python -m http.server -d testoutput 8001
